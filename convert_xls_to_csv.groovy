@@ -1,5 +1,7 @@
 #!/usr/bin/env groovy
 
+import org.apache.poi.hssf.usermodel.*
+import org.apache.poi.ss.usermodel.*
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
@@ -61,6 +63,21 @@ class XlsConverter {
 
         println "\nWriting to ${outputPath}"
     }
+
+    def parseWorkbook() {
+        Workbook wb = WorkbookFactory.create(inputFile);
+        println "parsing workbook::${wb}"
+
+        List<HSSFSheet> rateSheets = wb.sheets.findAll{ it.sheetName =~ /Rate Table/ }
+        rateSheets.each { HSSFSheet sheet ->
+            parseSpreadsheet(sheet)
+        }
+    }
+
+    def parseSpreadsheet(HSSFSheet sheet) {
+        println "\tparsing sheet::${sheet.sheetName}"
+    }
+
 }
 
-new XlsConverter(args)
+new XlsConverter(args).parseWorkbook()
